@@ -13,6 +13,7 @@ RTT_WEIGHT = 0.6
 LOAD_WEIGHT = 0.4
 
 server_rtt = {}
+server_throughput = {}
 user_count = {}
 client_server_assignment = {}
 server_score = {}
@@ -38,7 +39,8 @@ def startup():
     for server in SERVERS:
         user_count[server] = 0
         server_rtt[server] = measure_rtt(server)   # in ms
-        logging.info(f'STARTUP: Server: {server} | Initial RTT: {server_rtt[server]}ms')
+        server_throughput[server] = measure_rtt(server)   # in kb/s
+        logging.info(f'STARTUP: Server: {server} | Initial RTT: {server_rtt[server]}ms | Initial Throughput: {server_throughput[server]:.2f} KB/s')
 
 
 def measure_rtt(server, num_pings = 3):
@@ -53,8 +55,23 @@ def measure_rtt(server, num_pings = 3):
     return int((total_time / num_pings ) * 1000)
 
 
-def calculate_weighted_avg(server, new_rtt):
+def measure_throughput(server):
+        start_time = time.time()
+        response = requests.head(f'http://{server}/output.mpd')
+        end_time = time.time()
+
+        size_kb = len(response.content) / 1024
+        rtt = end_time - start_time
+
+        return size_kb / rtt
+
+
+def calculate_weighted_avg_rtt(server, new_rtt):
     return int(ALPHA * server_rtt[server] + (1 - ALPHA) * new_rtt)
+
+
+def calculate_weighted_avg_throughput(server, new_throughput):
+    return int(ALPHA * server_throughput[server] + (1 - ALPHA) * new_throughput)
 
 
 def monitor_servers():
@@ -63,7 +80,7 @@ def monitor_servers():
             if user_count[server] == 0:
                 try:
                     new_rtt = measure_rtt(server, num_pings=1)  # single ping
-                    server_rtt[server] = calculate_weighted_avg(server, new_rtt)
+                    server_rtt[server] = calculate_weighted_avg_rtt(server, new_rtt)
                     logging.info(f'MONITOR: Server: {server} | New RTT: {new_rtt}ms | Smoothed RTT: {server_rtt[server]}ms')
                 except requests.exceptions.RequestException:
                     logging.error(f'UNREACHABLE | Server: {server} | Setting RTT to 9999ms')
@@ -72,11 +89,32 @@ def monitor_servers():
 
 
 def calculate_score(server):
-    rtt = server_rtt[server]
-    load = user_count[server] + 1     # avoid dividing by 1
+    # normalize values on a scale of 0 to 1. Best server gets 1, worse gets 0.
+    min_rtt = min(server_rtt.values())
+    max_rtt = max(server_rtt.values())
+    
+    min_load = min(user_count.values())
+    max_load = max(user_count.values())
 
-    # calculate score using normalized values
-    score = (RTT_WEIGHT * (1/rtt)) + ((LOAD_WEIGHT) * (1/load))     
+    min_tp = min(server_throughput.values())
+    max_tp = max(server_throughput.values())
+
+    if max_rtt == min_rtt:
+        rtt_score = 1.0
+    else:
+        rtt_score = 1 - ((server_rtt[server] - min_rtt) / (max_rtt - min_rtt))
+    
+    if max_load == min_load:
+        load_score = 1.0
+    else:
+        load_score = 1 - ((user_count[server] - min_load) / (max_load - min_load))
+
+    if max_tp == min_tp:
+        tp_score = 1.0
+    else:
+        tp_score = (server_throughput[server] - min_tp) / (max_tp - min_tp)
+
+    score = (rtt_score + load_score + tp_score) / 3
 
     server_score[server] = score
 
@@ -128,16 +166,24 @@ def get_segment(segment):
 
     url = f'http://{server}/{segment}'
 
-    # Send request to server, track RTT and user count during request
+    # Send request to server, track RTT, throughput, and user count during request
     user_count[server] += 1
 
     start_time = time.time()
     response = requests.get(url)  
     end_time = time.time()
+    time_taken = end_time - start_time
 
-    new_rtt = int((end_time - start_time) * 1000)
-    server_rtt[server] = calculate_weighted_avg(server, new_rtt)
-    logging.info(f'GET SEGMENT: Client: {client_ip} | Server: {server} | RTT: {new_rtt}ms | Smoothed RTT: {server_rtt[server]}ms | Load: {user_count[server]}')
+    # new RTT
+    new_rtt = int((time_taken) * 1000)
+    server_rtt[server] = calculate_weighted_avg_rtt(server, new_rtt)
+
+    # new throughput
+    size_kb = len(response.content) / 1024
+    new_throughput = size_kb / time_taken
+    server_throughput[server] = calculate_weighted_avg_throughput(server, new_throughput)
+    
+    logging.info(f'GET SEGMENT: Client: {client_ip} | Server: {server} | RTT: {new_rtt}ms | Avg RTT: {server_rtt[server]}ms | Avg Throughput: {server_throughput[server]}kb/s | Load: {user_count[server]}')
 
     user_count[server] -= 1
 
