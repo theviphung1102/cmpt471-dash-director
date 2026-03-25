@@ -1,4 +1,5 @@
 from flask import Flask, request, Response
+from flask_cors import CORS
 import requests
 import time
 import threading
@@ -12,7 +13,7 @@ if MODE == 'MININET':
     SERVERS = ['10.0.0.2', '10.0.0.3', '10.0.0.4']
 elif MODE == 'LOCAL':
     SERVERS = ['127.0.0.1:8001', '127.0.0.1:8002', '127.0.0.1:8003']
-    
+
 ALPHA = 0.7
 RTT_WEIGHT = 0.6
 LOAD_WEIGHT = 0.4
@@ -35,6 +36,7 @@ logging.basicConfig(
 )
 
 app = Flask(__name__)
+CORS(app)
 
 #region MAIN FUNCTIONS
 
