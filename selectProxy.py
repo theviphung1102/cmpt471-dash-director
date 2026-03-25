@@ -12,16 +12,6 @@ ALPHA = 0.7
 RTT_WEIGHT = 0.6
 LOAD_WEIGHT = 0.4
 
-video_source = {
-    'video1': ['10.0.0.2', '10.0.0.3', '10.0.0.4']
-}
-
-server_videos = {
-    '10.0.0.2': {'video1': 'http://10.0.0.2/video1/output.mpd'},
-    '10.0.0.3': {'video1': 'http://10.0.0.3/video1/output.mpd'},
-    '10.0.0.4': {'video1': 'http://10.0.0.4/video1/output.mpd'}
-}
-
 server_rtt = {}
 user_count = {}
 client_server_assignment = {}
@@ -54,7 +44,7 @@ def measure_rtt(server, num_pings = 3):
     total_time = 0
     for _ in range(num_pings):
         start_time = time.time()
-        requests.head(f'http://{server}/video1/output.mpd')
+        requests.head(f'http://{server}/output.mpd')
         end_time = time.time()
         
         total_time += end_time - start_time
@@ -92,18 +82,13 @@ def calculate_score(server):
     return score
 
 
-def select_server(client_ip, video):
-    video_servers = video_source.get(video, None)
-
-    if not video_servers:
-        return video_servers
-    
+def select_server(client_ip):
     current_server = client_server_assignment.get(client_ip, None)
 
-    for server in video_servers:
+    for server in SERVERS:
         calculate_score(server)
 
-    best_server = max(video_servers, key=lambda s: server_score[s])
+    best_server = max(SERVERS, key=lambda s: server_score[s])
 
     # new client, first request, return best server
     if not current_server:
@@ -123,14 +108,11 @@ def select_server(client_ip, video):
 #endregion
 
 # region ROUTING
-@app.route('/<path:video>/output.mpd')
-def get_mpd(video):
-    if video not in video_source:
-        return Response('Video not found', status=404)
-    
+@app.route('/output.mpd')
+def get_mpd():
     # get MPD file of any server with video
-    server = video_source[video][0]
-    response = requests.get(f'http://{server}/{video}/output.mpd')
+    server = SERVERS[0]
+    response = requests.get(f'http://{server}/output.mpd')
 
     # replace MPD file URLs to point to proxy instead
     content = response.text
@@ -138,16 +120,12 @@ def get_mpd(video):
 
     return Response(content, mimetype='application/dash+xml')
 
-@app.route('/<path:video>/<path:segment>')
-def get_segment(video, segment):
+@app.route('/<path:segment>')
+def get_segment(segment):
     client_ip = request.remote_addr
-    server = select_server(client_ip, video)
+    server = select_server(client_ip)
 
-    if server is None:
-        logging.warning(f'NOT FOUND | Client: {client_ip} | Video: {video}')
-        return Response('Video not found', status=404)
-
-    url = f'http://{server}/{video}/{segment}'
+    url = f'http://{server}/{segment}'
 
     # Send request to server, track RTT and user count during request
     user_count[server] += 1
