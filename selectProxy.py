@@ -47,7 +47,7 @@ def measure_rtt(server, num_pings = 3):
     total_time = 0
     for _ in range(num_pings):
         start_time = time.time()
-        requests.head(f'http://{server}/output.mpd')
+        requests.get(f'http://{server}/output.mpd')
         end_time = time.time()
         
         total_time += end_time - start_time
@@ -67,11 +67,11 @@ def measure_throughput(server):
 
 
 def calculate_weighted_avg_rtt(server, new_rtt):
-    return int(ALPHA * server_rtt[server] + (1 - ALPHA) * new_rtt)
+    return ALPHA * server_rtt[server] + (1 - ALPHA) * new_rtt
 
 
 def calculate_weighted_avg_throughput(server, new_throughput):
-    return int(ALPHA * server_throughput[server] + (1 - ALPHA) * new_throughput)
+    return ALPHA * server_throughput[server] + (1 - ALPHA) * new_throughput
 
 
 def monitor_servers():
@@ -80,8 +80,12 @@ def monitor_servers():
             if user_count[server] == 0:
                 try:
                     new_rtt = measure_rtt(server, num_pings=1)  # single ping
+                    new_tp = measure_throughput(server)
+                    
                     server_rtt[server] = calculate_weighted_avg_rtt(server, new_rtt)
-                    logging.info(f'MONITOR: Server: {server} | New RTT: {new_rtt}ms | Avg RTT: {server_rtt[server]}ms')
+                    server_throughput[server] = calculate_weighted_avg_throughput(server, new_tp)
+                    
+                    logging.info(f'MONITOR: Server: {server} | New RTT: {new_rtt}ms | Avg RTT: {server_rtt[server]:.2f}ms | Throughput {new_tp:.2f}kb/s | Avg Throughput: {server_throughput[server]:.2f}kb/s')
                 except requests.exceptions.RequestException:
                     logging.error(f'UNREACHABLE | Server: {server} | Setting RTT to 9999ms')
                     server_rtt[server] = 9999
@@ -135,10 +139,10 @@ def select_server(client_ip):
         logging.info(f'NEW CLIENT: Client: {client_ip} | Assigned to: {best_server} | Score: {server_score[best_server]:.6f}')
         return best_server
         
-    # switch servers only if 20% performance gain
-    if server_score[best_server] > server_score[current_server] * 1.2:
+    # switch servers only if sufficient performance gain
+    if (server_score[best_server] - server_score[current_server]) > 0.2:
         client_server_assignment[client_ip] = best_server
-        logging.info(f'SWITCH SERVER: Client: {client_ip} | {current_server} -> {best_server} | Score gain: {(server_score[best_server]/server_score[current_server]):.2f}x')
+        logging.info(f'SWITCH SERVER: Client: {client_ip} | {current_server} -> {best_server} | Score gain: {(server_score[best_server]/server_score[current_server]):.2f}x | Old score: {server_score[current_server]:.2f}, New score: {server_score[best_server]:.2f}, )')
         return best_server
     
     logging.info(f'KEEP SERVER: Client: {client_ip} | Keeping: {current_server} | Score: {server_score[current_server]:.6f}')
@@ -178,12 +182,13 @@ def get_segment(segment):
     new_rtt = int((time_taken) * 1000)
     server_rtt[server] = calculate_weighted_avg_rtt(server, new_rtt)
 
-    # new throughput
-    size_kb = len(response.content) / 1024
-    new_throughput = size_kb / time_taken
-    server_throughput[server] = calculate_weighted_avg_throughput(server, new_throughput)
+    # new throughput for video segments
+    if 'chunk' in segment:
+        size_kb = len(response.content) / 1024
+        new_throughput = size_kb / time_taken
+        server_throughput[server] = calculate_weighted_avg_throughput(server, new_throughput)
     
-    logging.info(f'GET SEGMENT: Client: {client_ip} | Server: {server} | Segmment: {segment} | RTT: {new_rtt}ms | Avg RTT: {server_rtt[server]}ms | Avg Throughput: {server_throughput[server]}kb/s | Load: {user_count[server]}')
+    logging.info(f'GET SEGMENT: Client: {client_ip} | Server: {server} | Segment: {segment} | RTT: {new_rtt:.2f}ms | Avg RTT: {server_rtt[server]:.2f}ms | Avg Throughput: {server_throughput[server]:.2f}kb/s | Load: {user_count[server]:.2f}')
 
     user_count[server] -= 1
 
