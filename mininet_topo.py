@@ -3,6 +3,7 @@ from mininet.net import Mininet
 from mininet.nodelib import LinuxBridge
 from mininet.cli import CLI
 from mininet.log import setLogLevel, info
+import os
 
 class DASHTopo(Topo):
     def build(self):
@@ -32,6 +33,9 @@ def run():
     
     info('*** Starting Network ***\n')
     net.start()
+
+    info('*** Adding route to Mininet network ***\n')
+    os.system('ip route add 10.0.0.0/24 dev s1 2>/dev/null || true')
 
     info('*** Starting HTTP Servers on all Video Servers ***\n')
     # Automatically start a simple web server pointing to your video folder
