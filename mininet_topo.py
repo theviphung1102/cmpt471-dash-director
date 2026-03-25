@@ -23,10 +23,6 @@ class DASHTopo(Topo):
         server3 = self.addHost('server3', ip='10.0.0.4')
         self.addLink(server3, s1) 
 
-        # # Add source selection proxy server
-        # proxy = self.addHost('proxy', ip='10.0.0.5')
-        # self.addLink(proxy, s1) 
-
 def run():
     setLogLevel('info')
     topo = DASHTopo()
@@ -43,10 +39,6 @@ def run():
         host = net.get(server_name)
         host.cmd('python3 -m http.server 80 --directory video_sources &')
         info(f'{server_name} HTTP server started at IP: {host.IP()}\n')
-
-    # proxy = net.get('proxy')
-    # proxy.cmd('python3 selectProxy.py &')
-    # info(f'Proxy server started at IP: {proxy.IP()}\n')
 
     info('*** Running Mininet CLI ***\n')
     info('Type "client wget http://10.0.0.2/output.mpd" to test!\n')

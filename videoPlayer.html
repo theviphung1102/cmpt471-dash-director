@@ -9,9 +9,27 @@
     <video id="videoPlayer" controls width="720"></video>
 
     <script>
-        var url = "http://127.0.0.1:5000/video1/output.mpd";
+        var url = "http://127.0.0.1:5000/output.mpd";
         var player = dashjs.MediaPlayer().create();
         player.initialize(document.getElementById("videoPlayer"), url, true);
+
+        // For debugging purposes
+        player.on(dashjs.MediaPlayer.events.ERROR, function(e) {
+            console.log('DASH Error:', e);
+        });
+        
+        player.on(dashjs.MediaPlayer.events.MANIFEST_LOADED, function(e) {
+            console.log('Manifest loaded successfully');
+            player.play();  // force play after manifest loads
+        });
+
+        player.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, function(e) {
+            console.log('Stream initialized');
+        });
+
+        player.on(dashjs.MediaPlayer.events.FRAGMENT_LOADING_STARTED, function(e) {
+            console.log('Loading fragment:', e);
+        });
     </script>
 </body>
 </html>
