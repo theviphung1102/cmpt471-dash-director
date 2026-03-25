@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DASH Video Player</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dashjs/4.7.0/dash.all.min.js"></script>
+</head>
+<body>
+    <h1>CMPT 471 - DASH Video Player</h1>
+    <video id="videoPlayer" controls width="720"></video>
+
+    <script>
+        var url = "http://<proxy_ip>:5000/video1/output.mpd";
+        var player = dashjs.MediaPlayer().create();
+        player.initialize(document.getElementById("videoPlayer"), url, true);
+    </script>
+</body>
+</html>
