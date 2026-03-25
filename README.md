@@ -5,6 +5,8 @@
 2. **Start the Network:** Run `sudo python3 mininet_topo.py` in the Ubuntu terminal.
 3. **Test the Server:** Inside the `mininet>` prompt, run:
    `client wget http://10.0.0.2/output.mpd`
+4. **Start the Proxy:** Run `sudo python3 selectProxy.pyy` in a new seperate Ubuntu terminal.
+5. **Play the Video:** Open `videoPlayer.html` and click play.
 
 ## Project Structure
 * `mininet_topo.py`: The network topology. Uses `LinuxBridge` for WSL2 compatibility.
