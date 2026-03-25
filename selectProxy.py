@@ -39,7 +39,7 @@ def startup():
     for server in SERVERS:
         user_count[server] = 0
         server_rtt[server] = measure_rtt(server)   # in ms
-        server_throughput[server] = measure_rtt(server)   # in kb/s
+        server_throughput[server] = measure_throughput(server)   # in kb/s
         logging.info(f'STARTUP: Server: {server} | Initial RTT: {server_rtt[server]}ms | Initial Throughput: {server_throughput[server]:.2f} KB/s')
 
 
@@ -57,7 +57,7 @@ def measure_rtt(server, num_pings = 3):
 
 def measure_throughput(server):
         start_time = time.time()
-        response = requests.head(f'http://{server}/output.mpd')
+        response = requests.get(f'http://{server}/output.mpd')
         end_time = time.time()
 
         size_kb = len(response.content) / 1024
@@ -81,7 +81,7 @@ def monitor_servers():
                 try:
                     new_rtt = measure_rtt(server, num_pings=1)  # single ping
                     server_rtt[server] = calculate_weighted_avg_rtt(server, new_rtt)
-                    logging.info(f'MONITOR: Server: {server} | New RTT: {new_rtt}ms | Smoothed RTT: {server_rtt[server]}ms')
+                    logging.info(f'MONITOR: Server: {server} | New RTT: {new_rtt}ms | Avg RTT: {server_rtt[server]}ms')
                 except requests.exceptions.RequestException:
                     logging.error(f'UNREACHABLE | Server: {server} | Setting RTT to 9999ms')
                     server_rtt[server] = 9999
@@ -183,7 +183,7 @@ def get_segment(segment):
     new_throughput = size_kb / time_taken
     server_throughput[server] = calculate_weighted_avg_throughput(server, new_throughput)
     
-    logging.info(f'GET SEGMENT: Client: {client_ip} | Server: {server} | RTT: {new_rtt}ms | Avg RTT: {server_rtt[server]}ms | Avg Throughput: {server_throughput[server]}kb/s | Load: {user_count[server]}')
+    logging.info(f'GET SEGMENT: Client: {client_ip} | Server: {server} | Segmment: {segment} | RTT: {new_rtt}ms | Avg RTT: {server_rtt[server]}ms | Avg Throughput: {server_throughput[server]}kb/s | Load: {user_count[server]}')
 
     user_count[server] -= 1
 
