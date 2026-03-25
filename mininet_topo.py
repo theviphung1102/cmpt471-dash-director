@@ -45,7 +45,7 @@ def run():
         info(f'{server_name} HTTP server started at IP: {host.IP()}\n')
 
     proxy = net.get('proxy')
-    proxy.cmd('python3 proxy.py &')
+    proxy.cmd('python3 selectProxy.py &')
     info(f'Proxy server started at IP: {proxy.IP()}\n')
 
     info('*** Running Mininet CLI ***\n')
