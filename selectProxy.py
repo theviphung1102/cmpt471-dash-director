@@ -6,10 +6,15 @@ import threading
 import logging
 from datetime import datetime
 import os
+from enum import Enum
 
+class ProxyMode(Enum):
+    NORMAL = 0      # Proxy works as normal, switches servers based on performance
+    TEST = 1        # Force start client on Server 1, but allows server switching aftr
+    CONTROL = 2     # For control testing, client is always on Server 1 and never switches
+
+EXECUTION_MODE = ProxyMode.NORMAL
 SERVERS = ['10.0.0.2', '10.0.0.3', '10.0.0.4']
-
-TEST_MODE = True
 TEST_SERVER = SERVERS[0]
 
 ALPHA = 0.7
@@ -131,14 +136,22 @@ def select_server(client_ip):
 
     # new client - currently returning first server for testing congestion on specific server link
     if not current_server:
-        init_server = TEST_SERVER if TEST_MODE else best_server
+        if EXECUTION_MODE == ProxyMode.NORMAL:
+            init_server = best_server
+        else:
+            init_server = TEST_SERVER
+
         client_server_assignment[client_ip] = init_server
 
-        logging.info(f"NEW CLIENT (TestMode={TEST_MODE}): {client_ip} -> {init_server}")
+        logging.info(f"NEW CLIENT (TestMode={EXECUTION_MODE.name}): {client_ip} -> {init_server}")
         logging.info(f"INITIAL SCORES: S1: {server_score[SERVERS[0]]:.4f} | "
                      f"S2: {server_score[SERVERS[1]]:.4f} | S3: {server_score[SERVERS[2]]:.4f}")
         
         return init_server
+    
+    if EXECUTION_MODE == ProxyMode.CONTROL:
+        logging.info(f"KEEPING CONTROL MODE: Staying on {current_server}")
+        return current_server
         
     current_score = server_score[current_server]
     best_score = server_score[best_server]
