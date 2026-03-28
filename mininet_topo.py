@@ -8,21 +8,26 @@ import os
 class DASHTopo(Topo):
     def build(self):
         # Using standard LinuxBridge to completely bypass all WSL2 kernel issues
-        s1 = self.addSwitch('s1', cls=LinuxBridge)
+        s1 = self.addSwitch('s1', cls=LinuxBridge) # Local Edge Switch
+        s2 = self.addSwitch('s2', cls=LinuxBridge) # Remote Core Switch
 
         # Add the client host
         client = self.addHost('client', ip='10.0.0.1')
         self.addLink(client, s1) 
 
-        # Add 3 DASH Video Servers 
+        # Add Local DASH Video Servers (Edge)
         server1 = self.addHost('server1', ip='10.0.0.2')
         self.addLink(server1, s1) 
 
         server2 = self.addHost('server2', ip='10.0.0.3')
         self.addLink(server2, s1) 
 
+        # Add Remote DASH Video Server (Core)
         server3 = self.addHost('server3', ip='10.0.0.4')
-        self.addLink(server3, s1) 
+        self.addLink(server3, s2) 
+        
+        # Connect the Edge and Core switches
+        self.addLink(s1, s2)
 
 def run():
     setLogLevel('info')
