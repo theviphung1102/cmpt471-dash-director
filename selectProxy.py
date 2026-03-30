@@ -33,8 +33,8 @@ user_count = {}
 client_server_assignment = {}
 server_score = {}
 
+# For logging
 os.makedirs('logs', exist_ok=True)
-
 log_filename = f'logs/proxy_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'
 logging.basicConfig(
     level=logging.INFO,
@@ -49,6 +49,8 @@ app = Flask(__name__)
 CORS(app)
 
 http_session = requests.Session()
+adapter = requests.adapters.HTTPAdapter(pool_connections=10, pool_maxsize=20)
+http_session.mount('http://', adapter)
 stats_lock = threading.Lock()
 
 #region MAIN FUNCTIONS
@@ -65,7 +67,7 @@ def measure_rtt(server, num_pings = 3):
     total_time = 0
     for _ in range(num_pings):
         start_time = time.time()
-        requests.get(f'http://{server}/output.mpd')
+        http_session.get(f'http://{server}/output.mpd', timeout=2)
         end_time = time.time()
         
         total_time += end_time - start_time
@@ -75,7 +77,7 @@ def measure_rtt(server, num_pings = 3):
 
 def measure_throughput(server):
         start_time = time.time()
-        response = requests.get(f'http://{server}/output.mpd')
+        response = http_session.get(f'http://{server}/output.mpd', timeout=2)
         end_time = time.time()
 
         size_kb = len(response.content) / 1024
@@ -94,6 +96,12 @@ def calculate_weighted_avg_throughput(server, new_throughput):
 
 def monitor_servers():
     while True:
+        active_users = sum(user_count.values())
+
+        if active_users > 0:
+            time.sleep(2)
+            continue
+
         for server in SERVERS:
             if user_count[server] == 0:
                 try:
@@ -111,6 +119,10 @@ def monitor_servers():
 
 
 def calculate_score(server):
+    if server_rtt[server] >= 9999:
+        server_score[server] = 0.0
+        return 0.0
+    
     # RTT, load, and throughput scores normalized 0 to 1
     rtt_val = min(server_rtt[server], MAX_RTT)
     rtt_score = 1.0 - (rtt_val / MAX_RTT)
@@ -176,46 +188,41 @@ def select_server(client_ip):
 @app.route('/output.mpd')
 def get_mpd():
     client_ip = request.remote_addr
-    # reset client server assignment so they get new 'best server' selection
-    if client_ip in client_server_assignment:
-        del client_server_assignment[client_ip]
-        logging.info(f"SESSION RESET: Client {client_ip} requested new manifest.")
+    
+    if client_ip not in client_server_assignment:
+        best_initial_server = min(server_rtt, key=server_rtt.get)
+        client_server_assignment[client_ip] = best_initial_server
+        logging.info(f"QUICK ASSIGN: {client_ip} -> {best_initial_server}")
 
-    # get MPD file of any server with video
-    content = None
-    for server in SERVERS:
-        try:
-            response = requests.get(f'http://{server}/output.mpd', timeout=2)
-            if response.status_code == 200:
-                content = response.text
-                origin_server = server
-                break
-        except requests.exceptions.RequestException:
-            logging.warning(f"GET MPD FAIL: {server} unreachable, trying next server")
-            continue
-
-    if not content:
-        return Response("No servers available for manifest", status=503)
-
-    # replace MPD file URLs to point to proxy instead
-    content = content.replace(f'http://{origin_server}', f'http://{request.host}')
-
-    return Response(content, mimetype='application/dash+xml')
+    server = client_server_assignment[client_ip]
+    
+    try:
+        response = http_session.get(f'http://{server}/output.mpd')
+        content = response.text
+        
+        # Rewrite URLs so the browser stays on the Proxy (10.0.0.5)
+        content = content.replace(f'http://{server}', f'http://{request.host}')
+        
+        return Response(content, mimetype='application/dash+xml')
+    except Exception as e:
+        logging.error(f"Manifest Error: {e}")
+        return Response("Proxy Busy", status=503)
 
 @app.route('/<path:segment>')
 def get_segment(segment):
+    time.sleep(0.01)
+    logging.info(f"RAW REQUEST: {request.path}")
     client_ip = request.remote_addr
-    server = select_server(client_ip)
 
+    server = select_server(client_ip)
     url = f'http://{server}/{segment}'
 
     # Send request to server, track RTT, throughput, and user count during request
     user_count[server] += 1
 
-    start_time = time.time()
-    
     try:
-        response = http_session.get(url, timeout=(2, 5))
+        start_time = time.time()
+        response = http_session.get(url, timeout=(1.0, 3.0), stream=True)
         time_taken = max(time.time() - start_time, 0.0001)
 
         if response.status_code == 200:
@@ -231,12 +238,10 @@ def get_segment(segment):
                     new_throughput = size_kb / time_taken
                     server_throughput[server] = calculate_weighted_avg_throughput(server, new_throughput)
 
-            #response headers
-            flask_res = Response(data, status=200)
-            flask_res.headers['Content-Length'] = str(len(data))
-            flask_res.headers['Access-Control-Allow-Origin'] = '*'
-            flask_res.headers['Connection'] = 'keep-alive'
             
+            flask_res = Response(data, status=200)
+
+            #response headers
             for key, value in response.headers.items():
                 if key.lower() not in ['content-encoding', 'transfer-encoding', 'connection', 'content-length']:
                     flask_res.headers[key] = value
@@ -247,6 +252,10 @@ def get_segment(segment):
             logging.warning(f'SERVER ERROR: {server} returned {response.status_code}')
             return Response("Segment not found", status=404)
 
+    except requests.exceptions.RequestException as e:
+        logging.error(f"TIMEOUT/ABORT on {segment}: {e}")
+        return Response("Gateway Timeout", status=504)
+    
     except Exception as e:
         logging.error(f'PROXY CRASH on {segment}: {e}')
         return Response("Network Error", status=502)
@@ -263,4 +272,4 @@ if __name__ == '__main__':
     monitor_thread = threading.Thread(target=monitor_servers, daemon=True)
     monitor_thread.start()
     
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, threaded=True, processes=1)

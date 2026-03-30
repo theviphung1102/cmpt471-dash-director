@@ -63,6 +63,7 @@ def run():
     CLI(net)
 
     info('*** Stopping Network ***\n')
+    proxy_host.cmd('pkill -f selectProxy.py')
     net.stop()
 
 if __name__ == '__main__':
