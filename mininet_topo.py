@@ -34,6 +34,7 @@ class DASHTopo(Topo):
 
 def run():
     setLogLevel('info')
+    os.system("sudo mn -c")
     topo = DASHTopo()
     
     # Standard Mininet initialization, disabled controller since LinuxBridge doesn't need one

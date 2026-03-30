@@ -48,6 +48,9 @@ logging.basicConfig(
 app = Flask(__name__)
 CORS(app)
 
+http_session = requests.Session()
+stats_lock = threading.Lock()
+
 #region MAIN FUNCTIONS
 
 def startup():
@@ -210,25 +213,46 @@ def get_segment(segment):
     user_count[server] += 1
 
     start_time = time.time()
-    response = requests.get(url)  
-    end_time = time.time()
-    time_taken = end_time - start_time
-
-    # new RTT
-    new_rtt = int((time_taken) * 1000)
-    server_rtt[server] = calculate_weighted_avg_rtt(server, new_rtt)
-
-    # new throughput for video segments
-    if 'chunk' in segment:
-        size_kb = len(response.content) / 1024
-        new_throughput = size_kb / time_taken
-        server_throughput[server] = calculate_weighted_avg_throughput(server, new_throughput)
     
-    logging.info(f'GET SEGMENT: Client: {client_ip} | Server: {server} | Segment: {segment} | RTT: {new_rtt:.2f}ms | Avg RTT: {server_rtt[server]:.2f}ms | Avg Throughput: {server_throughput[server]:.2f}kb/s | Load: {user_count[server]}')
+    try:
+        response = http_session.get(url, timeout=(2, 5))
+        time_taken = max(time.time() - start_time, 0.0001)
 
-    user_count[server] -= 1
+        if response.status_code == 200:
+            data = response.content
 
-    return Response(response.content, mimetype='video/mp4')
+            # Lock when updating rtt and throughput stats
+            with stats_lock:
+                new_rtt = int(time_taken * 1000)
+                server_rtt[server] = calculate_weighted_avg_rtt(server, new_rtt)
+                
+                if 'chunk' in segment and len(data) > 10240:
+                    size_kb = len(data) / 1024
+                    new_throughput = size_kb / time_taken
+                    server_throughput[server] = calculate_weighted_avg_throughput(server, new_throughput)
+
+            #response headers
+            flask_res = Response(data, status=200)
+            flask_res.headers['Content-Length'] = str(len(data))
+            flask_res.headers['Access-Control-Allow-Origin'] = '*'
+            flask_res.headers['Connection'] = 'keep-alive'
+            
+            for key, value in response.headers.items():
+                if key.lower() not in ['content-encoding', 'transfer-encoding', 'connection', 'content-length']:
+                    flask_res.headers[key] = value
+
+            logging.info(f'SUCCESS: {server} | {segment} | RTT: {new_rtt}ms | Load: {user_count[server]}')
+            return flask_res
+        else:
+            logging.warning(f'SERVER ERROR: {server} returned {response.status_code}')
+            return Response("Segment not found", status=404)
+
+    except Exception as e:
+        logging.error(f'PROXY CRASH on {segment}: {e}')
+        return Response("Network Error", status=502)
+    
+    finally:
+        user_count[server] = max(0, user_count[server] - 1)
 
 #endregion
 
