@@ -29,6 +29,9 @@ class DASHTopo(Topo):
         # Connect the Edge and Core switches
         self.addLink(s1, s2)
 
+        proxy = self.addHost('proxy', ip='10.0.0.5')
+        self.addLink(proxy, s1)
+
 def run():
     setLogLevel('info')
     topo = DASHTopo()
@@ -41,6 +44,11 @@ def run():
 
     info('*** Adding route to Mininet network ***\n')
     os.system('ip route add 10.0.0.0/24 dev s1 2>/dev/null || true')
+
+    info('*** Starting Proxy on Proxy Host ***\n')
+    proxy_host = net.get('proxy')
+    proxy_host.cmd('python3 selectProxy.py &')
+    info(f'Proxy started at IP: {proxy_host.IP()}\n')
 
     info('*** Starting HTTP Servers on all Video Servers ***\n')
     # Automatically start a simple web server pointing to your video folder
