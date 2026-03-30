@@ -9,7 +9,7 @@
     <video id="videoPlayer" controls width="720"></video>
 
     <script>
-        var url = "http://127.0.0.1:5000/output.mpd";
+        var url = "http://10.0.0.5:5000/output.mpd";
         var player = dashjs.MediaPlayer().create();
         player.initialize(document.getElementById("videoPlayer"), url, true);
 
