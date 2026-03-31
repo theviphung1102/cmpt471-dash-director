@@ -4,16 +4,26 @@ from mininet.nodelib import LinuxBridge
 from mininet.cli import CLI
 from mininet.log import setLogLevel, info
 import os
+import sys
 
 class DASHTopo(Topo):
-    def build(self):
+    def build(self, num_clients=1):
         # Using standard LinuxBridge to completely bypass all WSL2 kernel issues
         s1 = self.addSwitch('s1', cls=LinuxBridge) # Local Edge Switch
-        s2 = self.addSwitch('s2', cls=LinuxBridge) # Remote Core Switch
+        # s2 = self.addSwitch('s2', cls=LinuxBridge) # Remote Core Switch
 
         # Add the client host
-        client = self.addHost('client', ip='10.0.0.1')
-        self.addLink(client, s1) 
+        if num_clients == 1:
+            client = self.addHost('client', ip='10.0.0.1')
+            self.addLink(client, s1)
+        else:
+            for i in range(1, num_clients + 1):
+                # Giving them IPs starting from 10.0.0.10
+                name = f'client{i}'
+                ip_addr = f'10.0.0.{9 + i}' 
+                c = self.addHost(name, ip=ip_addr)
+                self.addLink(c, s1)
+                print(f"Added {name} at {ip_addr}")
 
         # Add Local DASH Video Servers (Edge)
         server1 = self.addHost('server1', ip='10.0.0.2')
@@ -24,10 +34,10 @@ class DASHTopo(Topo):
 
         # Add Remote DASH Video Server (Core)
         server3 = self.addHost('server3', ip='10.0.0.4')
-        self.addLink(server3, s2) 
+        self.addLink(server3, s1) 
         
-        # Connect the Edge and Core switches
-        self.addLink(s1, s2)
+        # # Connect the Edge and Core switches
+        # self.addLink(s1, s2)
 
         proxy = self.addHost('proxy', ip='10.0.0.5')
         self.addLink(proxy, s1)
@@ -35,7 +45,8 @@ class DASHTopo(Topo):
 def run():
     setLogLevel('info')
     os.system("sudo mn -c")
-    topo = DASHTopo()
+    num_clients = int(sys.argv[1]) if len(sys.argv) > 1 else 1
+    topo = DASHTopo(num_clients)
     
     # Standard Mininet initialization, disabled controller since LinuxBridge doesn't need one
     net = Mininet(topo=topo, controller=None)
