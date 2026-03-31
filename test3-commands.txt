@@ -1,0 +1,19 @@
+s1 tcpdump -i any host 10.0.0.5 -n -U -w test3_midcongestion.pcap &
+
+sh echo "Starting simulate user in BACKGROUND"
+client python3 simulate_users.py 1 &
+
+sh echo "Waiting user to watch few segments"
+sh sleep 4
+
+sh echo "CONGESTION: Adding 200ms delay to Server 1"
+server1 tc qdisc add dev server1-eth0 root netem delay 200ms
+
+sh echo "Waiting for remaining segments to finish"
+sh sleep 15
+
+sh echo "Performing cleanup"
+sh pkill tcpdump
+server1 tc qdisc del dev server1-eth0 root
+
+sh echo "Test 3 - Congestion (Mid) - Complete."

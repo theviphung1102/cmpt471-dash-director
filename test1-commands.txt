@@ -1,0 +1,12 @@
+s1 tcpdump -i any host 10.0.0.5 -n -U -w test1_normal.pcap &
+
+sh echo "Starting simulate user"
+client python3 simulate_users.py
+
+sh echo "Waiting few seconds for last segments"
+sh sleep 5
+
+sh echo "Performing cleanup"
+sh sudo pkill -f tcpdump
+
+sh echo "Test 1 - Normal - Complete. Check test1_normal.pcap"

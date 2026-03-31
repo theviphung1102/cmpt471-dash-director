@@ -30,11 +30,7 @@
         player.on(dashjs.MediaPlayer.events.QUALITY_CHANGE_RENDERED, function(e) {
             console.log('Quality change:', e.mediaType, 'new quality:', e.newQuality);
         });
-
-        player.on(dashjs.MediaPlayer.events.BUFFER_LEVEL_UPDATED, function(e) {
-            console.log('Buffer level:', e.mediaType, e.bufferLevel);
-        });
-
+        
         player.on(dashjs.MediaPlayer.events.PLAYBACK_STALLED, function(e) {
             console.log('STALL: Playback stalled');
         });
