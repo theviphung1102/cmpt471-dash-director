@@ -1,0 +1,122 @@
+2026-03-31 17:15:43,744 | STARTUP: Server: 10.0.0.2 | Initial RTT: 5ms | Initial Throughput: 1372.26 KB/s
+2026-03-31 17:15:43,752 | STARTUP: Server: 10.0.0.3 | Initial RTT: 2ms | Initial Throughput: 1261.46 KB/s
+2026-03-31 17:15:43,762 | STARTUP: Server: 10.0.0.4 | Initial RTT: 2ms | Initial Throughput: 1182.36 KB/s
+2026-03-31 17:15:43,764 | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.0.0.5:5000
+2026-03-31 17:15:43,764 | [33mPress CTRL+C to quit[0m
+2026-03-31 17:15:43,766 | MONITOR: Server: 10.0.0.2 | New RTT: 2ms | Avg RTT: 2.90ms | Throughput 1135.06kb/s | Avg Throughput: 1206.22kb/s
+2026-03-31 17:15:43,769 | MONITOR: Server: 10.0.0.3 | New RTT: 1ms | Avg RTT: 1.30ms | Throughput 1513.35kb/s | Avg Throughput: 1437.78kb/s
+2026-03-31 17:15:43,772 | MONITOR: Server: 10.0.0.4 | New RTT: 1ms | Avg RTT: 1.30ms | Throughput 1414.19kb/s | Avg Throughput: 1344.64kb/s
+2026-03-31 17:15:47,071 | NEW CLIENT (TestMode=TEST): 10.0.0.1 -> 10.0.0.2
+2026-03-31 17:15:47,071 | INITIAL SCORES: S1: 0.8095 | S2: 0.8760 | S3: 0.8686
+2026-03-31 17:15:47,074 | 10.0.0.1 - - [31/Mar/2026 17:15:47] "GET /output.mpd HTTP/1.1" 200 -
+2026-03-31 17:15:47,076 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.2 | Score: 0.809498
+2026-03-31 17:15:47,078 | SUCCESS: 10.0.0.2 | chunk-stream1-00001.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:47,078 | 10.0.0.1 - - [31/Mar/2026 17:15:47] "GET /chunk-stream1-00001.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:47,587 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.2 | Score: 0.952900
+2026-03-31 17:15:47,589 | SUCCESS: 10.0.0.2 | chunk-stream1-00002.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:47,589 | 10.0.0.1 - - [31/Mar/2026 17:15:47] "GET /chunk-stream1-00002.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:48,093 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.2 | Score: 0.964870
+2026-03-31 17:15:48,095 | SUCCESS: 10.0.0.2 | chunk-stream1-00003.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:48,095 | 10.0.0.1 - - [31/Mar/2026 17:15:48] "GET /chunk-stream1-00003.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:48,600 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.2 | Score: 0.968461
+2026-03-31 17:15:48,602 | SUCCESS: 10.0.0.2 | chunk-stream1-00004.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:48,602 | 10.0.0.1 - - [31/Mar/2026 17:15:48] "GET /chunk-stream1-00004.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:48,777 | MONITOR: Server: 10.0.0.2 | New RTT: 1ms | Avg RTT: 1.00ms | Throughput 1487.09kb/s | Avg Throughput: 6686.27kb/s
+2026-03-31 17:15:48,780 | MONITOR: Server: 10.0.0.3 | New RTT: 1ms | Avg RTT: 1.09ms | Throughput 1200.23kb/s | Avg Throughput: 1271.49kb/s
+2026-03-31 17:15:48,783 | MONITOR: Server: 10.0.0.4 | New RTT: 1ms | Avg RTT: 1.09ms | Throughput 1496.34kb/s | Avg Throughput: 1450.83kb/s
+2026-03-31 17:15:49,105 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.2 | Score: 0.969861
+2026-03-31 17:15:49,108 | SUCCESS: 10.0.0.2 | chunk-stream1-00005.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:49,108 | 10.0.0.1 - - [31/Mar/2026 17:15:49] "GET /chunk-stream1-00005.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:49,611 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.2 | Score: 0.969958
+2026-03-31 17:15:49,613 | SUCCESS: 10.0.0.2 | chunk-stream1-00006.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:49,614 | 10.0.0.1 - - [31/Mar/2026 17:15:49] "GET /chunk-stream1-00006.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:50,117 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.2 | Score: 0.969988
+2026-03-31 17:15:50,119 | SUCCESS: 10.0.0.2 | chunk-stream1-00007.m4s | RTT: 2ms | Load: 1
+2026-03-31 17:15:50,119 | 10.0.0.1 - - [31/Mar/2026 17:15:50] "GET /chunk-stream1-00007.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:50,622 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.2 | Score: 0.948996
+2026-03-31 17:15:50,625 | SUCCESS: 10.0.0.2 | chunk-stream1-00008.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:50,625 | 10.0.0.1 - - [31/Mar/2026 17:15:50] "GET /chunk-stream1-00008.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:51,127 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.2 | Score: 0.963699
+2026-03-31 17:15:51,733 | SUCCESS: 10.0.0.2 | chunk-stream1-00009.m4s | RTT: 405ms | Load: 1
+2026-03-31 17:15:51,734 | 10.0.0.1 - - [31/Mar/2026 17:15:51] "GET /chunk-stream1-00009.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:52,236 | SWITCH SERVER: Client: 10.0.0.1 | 10.0.0.2 -> 10.0.0.4 | Score gain: 2.21x | Old score: 0.4, New score: 0.8833665803724171, )
+2026-03-31 17:15:52,239 | SUCCESS: 10.0.0.4 | chunk-stream1-00010.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:52,239 | 10.0.0.1 - - [31/Mar/2026 17:15:52] "GET /chunk-stream1-00010.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:52,741 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.969190
+2026-03-31 17:15:52,744 | SUCCESS: 10.0.0.4 | chunk-stream1-00011.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:52,744 | 10.0.0.1 - - [31/Mar/2026 17:15:52] "GET /chunk-stream1-00011.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:53,248 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.969757
+2026-03-31 17:15:53,250 | SUCCESS: 10.0.0.4 | chunk-stream1-00012.m4s | RTT: 2ms | Load: 1
+2026-03-31 17:15:53,250 | 10.0.0.1 - - [31/Mar/2026 17:15:53] "GET /chunk-stream1-00012.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:53,763 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.948927
+2026-03-31 17:15:53,765 | SUCCESS: 10.0.0.4 | chunk-stream1-00013.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:53,765 | 10.0.0.1 - - [31/Mar/2026 17:15:53] "GET /chunk-stream1-00013.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:54,268 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.963678
+2026-03-31 17:15:54,271 | SUCCESS: 10.0.0.4 | chunk-stream1-00014.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:54,271 | 10.0.0.1 - - [31/Mar/2026 17:15:54] "GET /chunk-stream1-00014.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:54,600 | MONITOR: Server: 10.0.0.2 | New RTT: 410ms | Avg RTT: 372.16ms | Throughput 5.08kb/s | Avg Throughput: 1547.25kb/s
+2026-03-31 17:15:54,604 | MONITOR: Server: 10.0.0.3 | New RTT: 2ms | Avg RTT: 1.73ms | Throughput 1559.15kb/s | Avg Throughput: 1472.85kb/s
+2026-03-31 17:15:54,607 | MONITOR: Server: 10.0.0.4 | New RTT: 1ms | Avg RTT: 1.02ms | Throughput 1843.81kb/s | Avg Throughput: 6121.77kb/s
+2026-03-31 17:15:54,780 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.969431
+2026-03-31 17:15:54,783 | SUCCESS: 10.0.0.4 | chunk-stream1-00015.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:54,783 | 10.0.0.1 - - [31/Mar/2026 17:15:54] "GET /chunk-stream1-00015.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:55,286 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.969829
+2026-03-31 17:15:55,288 | SUCCESS: 10.0.0.4 | chunk-stream1-00016.m4s | RTT: 2ms | Load: 1
+2026-03-31 17:15:55,289 | 10.0.0.1 - - [31/Mar/2026 17:15:55] "GET /chunk-stream1-00016.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:55,792 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.948949
+2026-03-31 17:15:55,794 | SUCCESS: 10.0.0.4 | chunk-stream1-00017.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:55,794 | 10.0.0.1 - - [31/Mar/2026 17:15:55] "GET /chunk-stream1-00017.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:56,297 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.963685
+2026-03-31 17:15:56,299 | SUCCESS: 10.0.0.4 | chunk-stream1-00018.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:56,299 | 10.0.0.1 - - [31/Mar/2026 17:15:56] "GET /chunk-stream1-00018.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:56,802 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.968105
+2026-03-31 17:15:56,804 | SUCCESS: 10.0.0.4 | chunk-stream1-00019.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:56,805 | 10.0.0.1 - - [31/Mar/2026 17:15:56] "GET /chunk-stream1-00019.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:57,308 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.969432
+2026-03-31 17:15:57,310 | SUCCESS: 10.0.0.4 | chunk-stream1-00020.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:57,311 | 10.0.0.1 - - [31/Mar/2026 17:15:57] "GET /chunk-stream1-00020.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:57,814 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.969829
+2026-03-31 17:15:57,816 | SUCCESS: 10.0.0.4 | chunk-stream1-00021.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:57,816 | 10.0.0.1 - - [31/Mar/2026 17:15:57] "GET /chunk-stream1-00021.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:58,319 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.969949
+2026-03-31 17:15:58,321 | SUCCESS: 10.0.0.4 | chunk-stream1-00022.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:58,321 | 10.0.0.1 - - [31/Mar/2026 17:15:58] "GET /chunk-stream1-00022.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:58,824 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.969985
+2026-03-31 17:15:58,827 | SUCCESS: 10.0.0.4 | chunk-stream1-00023.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:58,827 | 10.0.0.1 - - [31/Mar/2026 17:15:58] "GET /chunk-stream1-00023.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:59,330 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.969995
+2026-03-31 17:15:59,334 | SUCCESS: 10.0.0.4 | chunk-stream1-00024.m4s | RTT: 3ms | Load: 1
+2026-03-31 17:15:59,334 | 10.0.0.1 - - [31/Mar/2026 17:15:59] "GET /chunk-stream1-00024.m4s HTTP/1.1" 200 -
+2026-03-31 17:15:59,838 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.927999
+2026-03-31 17:15:59,840 | SUCCESS: 10.0.0.4 | chunk-stream1-00025.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:15:59,840 | 10.0.0.1 - - [31/Mar/2026 17:15:59] "GET /chunk-stream1-00025.m4s HTTP/1.1" 200 -
+2026-03-31 17:16:00,343 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.957400
+2026-03-31 17:16:00,345 | SUCCESS: 10.0.0.4 | chunk-stream1-00026.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:16:00,345 | 10.0.0.1 - - [31/Mar/2026 17:16:00] "GET /chunk-stream1-00026.m4s HTTP/1.1" 200 -
+2026-03-31 17:16:00,444 | MONITOR: Server: 10.0.0.2 | New RTT: 410ms | Avg RTT: 398.65ms | Throughput 4.84kb/s | Avg Throughput: 467.56kb/s
+2026-03-31 17:16:00,448 | MONITOR: Server: 10.0.0.3 | New RTT: 1ms | Avg RTT: 1.22ms | Throughput 1734.09kb/s | Avg Throughput: 1655.72kb/s
+2026-03-31 17:16:00,451 | MONITOR: Server: 10.0.0.4 | New RTT: 1ms | Avg RTT: 1.04ms | Throughput 1622.28kb/s | Avg Throughput: 6396.22kb/s
+2026-03-31 17:16:00,849 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.968866
+2026-03-31 17:16:00,851 | SUCCESS: 10.0.0.4 | chunk-stream1-00027.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:16:00,851 | 10.0.0.1 - - [31/Mar/2026 17:16:00] "GET /chunk-stream1-00027.m4s HTTP/1.1" 200 -
+2026-03-31 17:16:01,355 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.969660
+2026-03-31 17:16:01,357 | SUCCESS: 10.0.0.4 | chunk-stream1-00028.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:16:01,357 | 10.0.0.1 - - [31/Mar/2026 17:16:01] "GET /chunk-stream1-00028.m4s HTTP/1.1" 200 -
+2026-03-31 17:16:01,861 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.969898
+2026-03-31 17:16:01,863 | SUCCESS: 10.0.0.4 | chunk-stream1-00029.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:16:01,863 | 10.0.0.1 - - [31/Mar/2026 17:16:01] "GET /chunk-stream1-00029.m4s HTTP/1.1" 200 -
+2026-03-31 17:16:02,367 | KEEP SERVER: Client: 10.0.0.1 | Keeping: 10.0.0.4 | Score: 0.969969
+2026-03-31 17:16:02,369 | SUCCESS: 10.0.0.4 | chunk-stream1-00030.m4s | RTT: 1ms | Load: 1
+2026-03-31 17:16:02,369 | 10.0.0.1 - - [31/Mar/2026 17:16:02] "GET /chunk-stream1-00030.m4s HTTP/1.1" 200 -
+2026-03-31 17:16:06,914 | MONITOR: Server: 10.0.0.2 | New RTT: 429ms | Avg RTT: 419.89ms | Throughput 2.00kb/s | Avg Throughput: 141.67kb/s
+2026-03-31 17:16:06,918 | MONITOR: Server: 10.0.0.3 | New RTT: 2ms | Avg RTT: 1.77ms | Throughput 1333.77kb/s | Avg Throughput: 1430.36kb/s
+2026-03-31 17:16:06,922 | MONITOR: Server: 10.0.0.4 | New RTT: 2ms | Avg RTT: 1.70ms | Throughput 1261.64kb/s | Avg Throughput: 1468.99kb/s
+2026-03-31 17:16:11,930 | MONITOR: Server: 10.0.0.2 | New RTT: 2ms | Avg RTT: 127.37ms | Throughput 1329.88kb/s | Avg Throughput: 973.41kb/s
+2026-03-31 17:16:11,933 | MONITOR: Server: 10.0.0.3 | New RTT: 1ms | Avg RTT: 1.23ms | Throughput 1131.94kb/s | Avg Throughput: 1221.47kb/s
+2026-03-31 17:16:11,936 | MONITOR: Server: 10.0.0.4 | New RTT: 1ms | Avg RTT: 1.21ms | Throughput 1774.63kb/s | Avg Throughput: 1682.93kb/s
+2026-03-31 17:16:16,942 | MONITOR: Server: 10.0.0.2 | New RTT: 2ms | Avg RTT: 39.61ms | Throughput 1229.03kb/s | Avg Throughput: 1152.35kb/s
+2026-03-31 17:16:16,947 | MONITOR: Server: 10.0.0.3 | New RTT: 2ms | Avg RTT: 1.77ms | Throughput 818.12kb/s | Avg Throughput: 939.12kb/s
+2026-03-31 17:16:16,952 | MONITOR: Server: 10.0.0.4 | New RTT: 2ms | Avg RTT: 1.76ms | Throughput 1472.66kb/s | Avg Throughput: 1535.75kb/s

@@ -1,0 +1,19 @@
+s1 tcpdump -i any host 10.0.0.5 -n -U -w test6_serverfail.pcap &
+
+sh echo "Starting simulate user in BACKGROUND"
+client python3 simulate_users.py 1 &
+
+sh echo "Waiting user to watch few segments"
+sh sleep 4
+
+sh echo "SERVER FAILURE: Killing server process on server 1"
+server1 pkill -f "http.server"
+
+sh echo "Waiting for remaining segments to finish"
+sh sleep 15
+
+sh echo "Performing cleanup"
+sh pkill tcpdump
+server1 python3 -m http.server 80 --directory video_sources &
+
+sh echo "Test 6 - Server Failure - Complete."

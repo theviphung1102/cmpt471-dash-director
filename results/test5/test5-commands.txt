@@ -1,0 +1,15 @@
+s1 tcpdump -i any host 10.0.0.5 -n -U -w test5_concurrentusers.pcap &
+
+sh echo "Starting simulate 10 concurrent users in BACKGROUND"
+client python3 simulate_users.py 10 &
+
+sh echo "Waiting for remaining segments to finish"
+sh sleep 20
+
+sh echo "Performing cleanup"
+sh pkill tcpdump
+server1 tc qdisc del dev server1-eth0 root
+
+sh echo "Test 5 - Concurrent Users - Complete."
+
+
