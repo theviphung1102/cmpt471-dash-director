@@ -10,7 +10,8 @@
 * `selectProxy.py`: Proxy server source selection mechanism implementation.
 * `video_sources/`: Contains the DASH manifest and video chunks.
 * `sample.mp4`: The original source video.
-* `test#-commands.txt`: Command files for test scenarios (to run in Mininet CLI)
+* `test#-commands.txt`: Command files for test scenarios (to run in Mininet CLI, see report to run).
+* `simulate_users.py`: Simulates multiple concurrent users (see report to run).
 
 ## Network Map
 * **Client:** 10.0.0.1
